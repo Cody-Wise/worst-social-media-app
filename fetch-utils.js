@@ -1,5 +1,5 @@
 const SUPABASE_URL = 'https://afgbmdkvqbvliaergujk.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmZ2JtZGt2cWJ2bGlhZXJndWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDc2Mzg2NTUsImV4cCI6MTk2MzIxNDY1NX0.VyU9_hrFWQ13GXnm_YwMxhGCqRVI1VMlopV5PCqYqYI';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmZ2JtZGt2cWJ2bGlhZXJndWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDkzNzI5NTksImV4cCI6MTk2NDk0ODk1OX0.eytUT7VfUjfNcVZ_7RpwGhhEqL6tuow2dgmruywHOlA';
 
 export const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -18,6 +18,38 @@ export function redirectIfLoggedIn() {
     if (getUser()) {
         location.replace('./profiles');
     }
+}
+
+export async function getOnlinePlayers() {
+    const response = await client
+        .from('profiles')
+        .select('*')
+        .match({ is_playing: true });
+
+    return response.body;
+}
+
+export async function updatePlayer(updatedPlayer) {
+    const response = await client
+        .from('profiles')
+        .update(updatedPlayer)
+        .match({ id: updatedPlayer.id })
+        .single();
+
+    return response.body;
+
+}
+
+export async function sendChat(someMessage) {
+    // how can i read the errors?
+    const response = await client
+        .from('chats')
+        .insert({
+            text: someMessage
+        }) 
+        .single();
+
+    return response.body;
 }
 
 export async function createProfile() {
